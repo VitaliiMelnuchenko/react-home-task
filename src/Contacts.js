@@ -4,18 +4,16 @@ class Contacts extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            "name": {
-                "first": "",
-                "last": ""
-                },
+            "first": "",
+            "last": "",
             "email": "",
             "phone": "",
-            "search": ""
+            "picture": ""
             };
         this.handleChange = this.handleChange.bind(this);
-        this.handleNameChange = this.handleNameChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleFilterChange = this.handleFilterChange.bind(this);
+        this.handleClick = this.handleClick.bind(this);
     }
 
     handleFilterChange(evt) {
@@ -25,17 +23,18 @@ class Contacts extends Component {
     handleSubmit(evt) {
         evt.preventDefault();
         this.props.addContact(this.state);
+        this.props.filterContacts();
+        console.log(this.props.contacts);
         this.setState({
-            "name": {
-                "first": "",
-                "last": ""
-                },
+            "first": "",
+            "last": "",
             "email": "",
             "phone": "",
+            "picture": ""
             });
     }
 
-    handleNameChange(evt) {
+    /*handleNameChange(evt) {
         let inputName = evt.target.name;
         let inputVal = evt.target.value;
         this.setState(state => {
@@ -43,12 +42,19 @@ class Contacts extends Component {
             copy.name[inputName] = inputVal;
             return { ...copy };
         });
-    }
+    }*/
 
     handleChange(evt) {
         this.setState({
             [evt.target.name]: evt.target.value
         });
+    }
+
+    handleClick(evt) {
+        evt.stopPropagation();
+        evt.nativeEvent.stopImmediatePropagation();
+        console.log(evt);
+        this.props.togglePage(evt.target.id);
     }
 
     render() {
@@ -58,10 +64,10 @@ class Contacts extends Component {
             <form onSubmit={this.handleSubmit}>
                 <label htmlFor="firstname">Firstname: </label>
                 <input type="text" name="first" id="firstname" 
-                value={this.state.name.first} onChange={this.handleNameChange} required/>
+                value={this.state.first} onChange={this.handleChange} required/>
                 <label htmlFor="lastname">Lastname: </label>
                 <input type="text" name="last" id="lastname" 
-                value={this.state.name.last} onChange={this.handleNameChange}/>
+                value={this.state.last} onChange={this.handleChange}/>
                 <label htmlFor="phone">Phone: </label>
                 <input type="text" name="phone" id="phone" 
                 value={this.state.phone} onChange={this.handleChange} required/>
@@ -72,7 +78,9 @@ class Contacts extends Component {
             </form>
             <ul>
                 { this.props.contacts.map( contact => {
-                    return <li>{ contact.name.first }</li>
+                    return <li>
+                        <b>{ contact.first } {contact.last}</b> {contact.phone} <a id={contact.id} onClick={this.handleClick}>View details</a>
+                    </li>
                 }) }
             </ul>
         </div>;
